@@ -1,4 +1,4 @@
-package com.data.connector.controller;
+package main.java.com.data.connector.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
