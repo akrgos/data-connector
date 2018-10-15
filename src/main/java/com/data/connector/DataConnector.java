@@ -9,6 +9,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 public class DataConnector extends SpringBootServletInitializer {
     public static void main(String[] args) {
         SpringApplication.run(DataConnector.class, args);
+
     }
 
     @Override

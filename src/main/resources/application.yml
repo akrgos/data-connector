@@ -1,0 +1,9 @@
+sap-configuration:
+  host: "awsbwdci01.bwaws.bowers-wilkins.com"
+  user: "SAPSALESFORE"
+  password: "Initial123"
+  language: "en"
+  function: "YTEST_RFC_CONNECTOR2"
+  systemNumber: "00"
+  client: "020"
+  destinationName: "0M1T8QO"
