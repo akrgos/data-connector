@@ -1,4 +1,4 @@
-package main.java.com.data.connector.config;
+package com.data.connector.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

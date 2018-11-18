@@ -1,4 +1,4 @@
-package main.java.com.data.connector.config;
+package com.data.connector.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "sap-configuration")
-public class SapConfiguration extends BaseConfiguration {
+public class SAPConfiguration extends BaseConfiguration {
     private String systemNumber;
     private String client;
     private String function;

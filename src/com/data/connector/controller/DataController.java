@@ -1,8 +1,8 @@
-package main.java.com.data.connector.controller;
+package com.data.connector.controller;
 
 import java.util.Collections;
 import java.util.Map;
-import main.java.com.data.connector.service.BaseService;
+import com.data.connector.service.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +25,5 @@ public class DataController {
     Map<String, Object> readData() {
         return baseService.readData();
     }
-
 
 }

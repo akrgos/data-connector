@@ -7,3 +7,10 @@ sap-configuration:
   systemNumber: "00"
   client: "020"
   destinationName: "0M1T8QO"
+
+sf-configuration:
+  host: ""
+  accessToken: ""
+  user: ""
+  password: ""
+  language: "en"

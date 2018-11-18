@@ -1,9 +1,9 @@
-package main.java.com.data.connector.service;
+package com.data.connector.service;
 
 import java.util.Map;
+import com.data.connector.config.BaseConfiguration;
 import lombok.Getter;
 import lombok.Setter;
-import main.java.com.data.connector.config.BaseConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
