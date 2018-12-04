@@ -10,5 +10,5 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 @ConfigurationProperties("sf-configuration")
 public class SFConfiguration extends BaseConfiguration {
-    private String accessToken;
+    private String accessTokenUri;
 }

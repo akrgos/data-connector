@@ -1,20 +1,17 @@
 package com.data.connector.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import com.data.connector.config.SAPConfiguration;
-import com.sap.conn.jco.AbapException;
-import com.sap.conn.jco.JCoDestination;
-import com.sap.conn.jco.JCoDestinationManager;
-import com.sap.conn.jco.JCoField;
-import com.sap.conn.jco.JCoFieldIterator;
-import com.sap.conn.jco.JCoFunction;
-import com.sap.conn.jco.JCoTable;
+import com.sap.conn.jco.*;
 import com.sap.conn.jco.ext.DestinationDataProvider;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,13 +22,12 @@ public class SAPService extends BaseService<SAPConfiguration> {
 
     @Override
     public Map<String, Object> readData() {
-        /*setProperties();
+        System.out.println("Reading data from SAP");
+        setProperties();
         final Map<String, Object> response = new HashMap<>();
         try {
             final JCoDestination destination = JCoDestinationManager.getDestination(getConfiguration().getDestinationName());
-            final JCoFunction function = destination.getRepository().getFunction(getConfiguration().getFunction());
-            function.getImportParameterList().setValue("I_NUM1", 10);
-            function.getImportParameterList().setValue("I_NUM2", 5);
+            final JCoFunction function = destination.getRepository().getFunction("ZSALESFORCE_UPDATE");
             function.execute(destination);
             try {
                 function.execute(destination);
@@ -40,11 +36,7 @@ public class SAPService extends BaseService<SAPConfiguration> {
                 response.put("status","500");
                 response.put("message","Internal server error : "+e.getMessage());
             }
-
-            System.out.println("T_RESULT");
-            JCoTable table = function.getTableParameterList().getTable("T_RESULT");
-
-            System.out.println("Rows = "+table.getNumRows());
+            JCoTable table = function.getTableParameterList().getTable("IT_SALESFORCE");
             final List<Map<String, Object>> responseDataList = new ArrayList<>();
             for(int i=0;i<table.getNumRows();i++) {
                 table.setRow(i);
@@ -61,24 +53,54 @@ public class SAPService extends BaseService<SAPConfiguration> {
             response.put("data",responseDataList);
         } catch (final AbapException ae) {
             System.out.println("Abap Exception occured.");
-            ae.printStackTrace();
             response.put("status",400);
             response.put("message",ae.getMessage());
         } catch (final Exception e) {
-            System.out.println("Other exception occured.");
             e.printStackTrace();
+            System.out.println("Other exception occured.");
             response.put("status",500);
             response.put("message",e.getMessage());
         }
-        return response;*/
-        System.out.print("Getting data from SAP");
-        return Collections.EMPTY_MAP;
+        return response;
     }
 
     @Override
     public void sendData(Map<String, Object> data) {
         //TODO: RFC call to insert data to SAP
-        System.out.print("sending refurnished data to SAP");
+        System.out.println("Sending data back to SAP");
+        setProperties();
+        System.out.println("From Salesforce : "+data);
+        if(data != null && data.get("root") != null && new JSONObject(data.get("root").toString()).getJSONArray("data").length()>0) {
+            JSONObject object = new JSONObject(data.get("root").toString());
+            JSONArray array = object.getJSONArray("data");
+            try {
+                final JCoDestination destination = JCoDestinationManager.getDestination(getConfiguration().getDestinationName());
+                final JCoFunction function = destination.getRepository().getFunction("ZSALESFORCE_UPDATE");
+                final JCoTable table = function.getTableParameterList().getTable("IT_SALESFORCE");
+                table.appendRows(array.length());
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject obj = array.getJSONObject(i);
+                    table.setRow(i);
+                    table.setValue("LIFSK", obj.getString("LIFSK"));
+                    table.setValue("VBELN", obj.getString("VBELN"));
+                    table.setValue("MANDT", obj.getString("MANDT"));
+                    table.setValue("COUNTRY", obj.getString("COUNTRY"));
+                    table.setValue("CITY1", obj.getString("CITY1"));
+                    table.setValue("AUART", obj.getString("AUART"));
+                    table.setValue("POST_CODE1", obj.getString("POST_CODE1"));
+                    table.setValue("TELF1", obj.getString("TELF1"));
+                    table.setValue("ZZ_RNIN", obj.getString("ZZ_RNIN"));
+                    table.setValue("STREET", obj.getString("STREET"));
+                    table.setValue("ZINDICATOR", obj.getString("ZINDICATOR"));
+                }
+                function.execute(destination);
+                System.out.println("Migration Complete");
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("No records found in destination");
+        }
     }
 
     private void setProperties() {
@@ -88,8 +110,20 @@ public class SAPService extends BaseService<SAPConfiguration> {
         properties.setProperty(DestinationDataProvider.JCO_USER, getConfiguration().getUser());
         properties.setProperty(DestinationDataProvider.JCO_PASSWD, getConfiguration().getPassword());
         properties.setProperty(DestinationDataProvider.JCO_LANG, getConfiguration().getLanguage());
+        properties.setProperty(DestinationDataProvider.JCO_CLIENT, getConfiguration().getClient());
+        createDestinationDataFile(getConfiguration().getDestinationName(), properties);
     }
 
+    private static void createDestinationDataFile(String destinationName, Properties connectProperties) {
 
-
+        File destCfg = new File(destinationName+".jcoDestination");
+        try {
+            FileOutputStream fos = new FileOutputStream(destCfg, false);
+            connectProperties.store(fos, "for tests only !");
+            fos.close();
+        }
+        catch(Exception e) {
+            throw new RuntimeException("Unable to create the destination files", e);
+        }
+    }
 }

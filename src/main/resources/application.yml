@@ -10,7 +10,8 @@ sap-configuration:
 
 sf-configuration:
   host: ""
-  accessToken: ""
+  #accessTokenUri: "https://login.salesforce.com/services/oauth2/token?grant_type=password&client_id=3MVG9ZL0ppGP5UrCyvDlmblweO7VKDx6j2bPXfJyX8Nfu1xOtfh88qfrJiC4uU_iHUx6TdLiWHfeRJCfyPjDE&client_secret=7444626851823451616&username=shreerath@outlook.com&password=appirio1234"
+  accessTokenUri : "https://test.salesforce.com/services/oauth2/token?grant_type=password&client_id=3MVG9RHx1QGZ7OsjsOnAqD5OgqhkugQLK_Vd1JDThZkFzB2CQtpJZIQp8NgfCLcPA6cfDcejIFATPtHpP2sBK&client_secret=7256963141016437175&username=integration@bowerswilkins.com.dev&password=invagesystems123C0Ji2AL1ZccwuNRKB4vWfvKMR"
   user: ""
   password: ""
   language: "en"

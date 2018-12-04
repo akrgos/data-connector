@@ -15,9 +15,15 @@ public class MigrationService {
     private BaseGatewayService destination;
 
     public void startMigration() {
-        final Map<String, Object> data = source.readData();
-        final Map<String, Object> confirmedData = destination.sendData(data);
-        source.sendData(confirmedData);
+        try {
+            while(true) {
+                final Map<String, Object> data = source.readData();
+                final Map<String, Object> confirmedData = destination.sendData(data);
+                source.sendData(confirmedData);
+                Thread.sleep(10800000L);
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
-
 }
