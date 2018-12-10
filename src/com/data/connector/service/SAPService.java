@@ -2,6 +2,7 @@ package com.data.connector.service;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,13 @@ public class SAPService extends BaseService<SAPConfiguration> {
 
 
     private Properties properties;
+
+    private static String HOST="";
+    private static String SYSTEM_NUMBER="";
+    private static String CLIENT = "";
+    private static String USER = "";
+    private static String PASSWORD = "";
+    private static String LANGUAGE = "";
 
     @Override
     public Map<String, Object> readData() {
@@ -104,13 +112,14 @@ public class SAPService extends BaseService<SAPConfiguration> {
     }
 
     private void setProperties() {
+        getConnectionDetails();
         properties = new Properties();
-        properties.setProperty(DestinationDataProvider.JCO_ASHOST, getConfiguration().getHost());
-        properties.setProperty(DestinationDataProvider.JCO_SYSNR, getConfiguration().getSystemNumber());
-        properties.setProperty(DestinationDataProvider.JCO_USER, getConfiguration().getUser());
-        properties.setProperty(DestinationDataProvider.JCO_PASSWD, getConfiguration().getPassword());
-        properties.setProperty(DestinationDataProvider.JCO_LANG, getConfiguration().getLanguage());
-        properties.setProperty(DestinationDataProvider.JCO_CLIENT, getConfiguration().getClient());
+        properties.setProperty(DestinationDataProvider.JCO_ASHOST, HOST);
+        properties.setProperty(DestinationDataProvider.JCO_SYSNR, SYSTEM_NUMBER);
+        properties.setProperty(DestinationDataProvider.JCO_USER, USER);
+        properties.setProperty(DestinationDataProvider.JCO_PASSWD, PASSWORD);
+        properties.setProperty(DestinationDataProvider.JCO_LANG, LANGUAGE);
+        properties.setProperty(DestinationDataProvider.JCO_CLIENT, CLIENT);
         createDestinationDataFile(getConfiguration().getDestinationName(), properties);
     }
 
@@ -125,5 +134,34 @@ public class SAPService extends BaseService<SAPConfiguration> {
         catch(Exception e) {
             throw new RuntimeException("Unable to create the destination files", e);
         }
+    }
+
+    private static void getConnectionDetails() {
+        final String SQL = "select a.login_id, a.password,a.token, b.client_or_connection_type, b.host_or_machine_address, b.machine_port_or_system_number, b.language from CONNECTION_AUTH a JOIN CONNECTION_MANAGER b on a.connection_id = b.connection_id and b.connection_name ='SAP'";
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (final Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        try (final Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/data_connector_db","root","PeIjs5qbw!");
+             final PreparedStatement preparedStatement = connection.prepareStatement(SQL)){
+
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()) {
+                USER = resultSet.getString("login_id");
+                PASSWORD = resultSet.getString("password");
+                CLIENT = resultSet.getString("client_or_connection_type");
+                HOST = resultSet.getString("host_or_machine_address");
+                LANGUAGE = resultSet.getString("language");
+                SYSTEM_NUMBER = resultSet.getString("machine_port_or_system_number");
+            }
+            resultSet.close();
+        } catch (final SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (final Exception e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 }
