@@ -137,7 +137,7 @@ public class SAPService extends BaseService<SAPConfiguration> {
     }
 
     private static void getConnectionDetails() {
-        final String SQL = "select a.login_id, a.password,a.token, b.client_or_connection_type, b.host_or_machine_address, b.machine_port_or_system_number, b.language from CONNECTION_AUTH a JOIN CONNECTION_MANAGER b on a.connection_id = b.connection_id and b.connection_name ='SAP'";
+        final String SQL = "select a.login_id, a.password,a.token, b.client_or_client_secret, b.host_or_machine_address, b.machine_port_or_system_number, b.language from CONNECTION_AUTH a JOIN CONNECTION_MANAGER b on a.connection_id = b.connection_id and b.connection_name ='SAP'";
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (final Exception e) {
@@ -151,7 +151,7 @@ public class SAPService extends BaseService<SAPConfiguration> {
             while(resultSet.next()) {
                 USER = resultSet.getString("login_id");
                 PASSWORD = resultSet.getString("password");
-                CLIENT = resultSet.getString("client_or_connection_type");
+                CLIENT = resultSet.getString("client_or_client_secret");
                 HOST = resultSet.getString("host_or_machine_address");
                 LANGUAGE = resultSet.getString("language");
                 SYSTEM_NUMBER = resultSet.getString("machine_port_or_system_number");
